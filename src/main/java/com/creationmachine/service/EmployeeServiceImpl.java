@@ -35,6 +35,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 	if (entity != null) {
 	    entity.setFirstName(employee.getFirstName());
 	    entity.setLastName(employee.getLastName());
+	    entity.setEmail(employee.getEmail());
 	    entity.setJoiningDate(employee.getJoiningDate());
 	    entity.setSalary(employee.getSalary());
 	    entity.setSsn(employee.getSsn());

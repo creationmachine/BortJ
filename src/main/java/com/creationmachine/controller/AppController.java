@@ -31,12 +31,12 @@ public class AppController {
     /*
      * This method will list all existing employees.
      */
-    @RequestMapping(value = { "/", "/list" }, method = RequestMethod.GET)
+    @RequestMapping(value = { "/", "employees/list" }, method = RequestMethod.GET)
     public String listEmployees(ModelMap model) {
 
         List<Employee> employees = service.findAllEmployees();
         model.addAttribute("employees", employees);
-        return "allemployees";
+        return "employees/allemployees";
     }
 
     /**
@@ -44,24 +44,24 @@ public class AppController {
      * @param model
      * @return
      */
-    @RequestMapping(value = { "/new" }, method = RequestMethod.GET)
+    @RequestMapping(value = { "employees/new" }, method = RequestMethod.GET)
     public String newEmployee(ModelMap model) {
         Employee employee = new Employee();
         model.addAttribute("employee", employee);
         model.addAttribute("edit", false);
-        return "registration";
+        return "employees/registration";
     }
 
     /*
      * This method will be called on form submission, handling POST request for
      * saving employee in database. It also validates the user input
      */
-    @RequestMapping(value = { "/new" }, method = RequestMethod.POST)
+    @RequestMapping(value = { "employees/new" }, method = RequestMethod.POST)
     public String saveEmployee(@Valid Employee employee, BindingResult result,
             ModelMap model) {
 
         if (result.hasErrors()) {
-            return "registration";
+            return "employees/registration";
         }
 
         /*
@@ -75,56 +75,56 @@ public class AppController {
         if(!service.isEmployeeSsnUnique(employee.getId(), employee.getSsn())){
             FieldError ssnError =new FieldError("employee","ssn",messageSource.getMessage("non.unique.ssn", new String[]{employee.getSsn()}, Locale.getDefault()));
             result.addError(ssnError);
-            return "registration";
+            return "employees/registration";
         }
 
         service.saveEmployee(employee);
 
         model.addAttribute("success", "Employee " + employee.getFirstName() + " " + employee.getLastName() + " registered successfully");
-        return "success";
+        return "employees/success";
     }
 
 
     /*
      * This method will provide the medium to update an existing employee.
      */
-    @RequestMapping(value = { "/edit-{ssn}-employee" }, method = RequestMethod.GET)
+    @RequestMapping(value = { "employees/edit-{ssn}-employee" }, method = RequestMethod.GET)
     public String editEmployee(@PathVariable String ssn, ModelMap model) {
         Employee employee = service.findEmployeeBySsn(ssn);
         model.addAttribute("employee", employee);
         model.addAttribute("edit", true);
-        return "registration";
+        return "employees/registration";
     }
 
     /*
      * This method will be called on form submission, handling POST request for
      * updating employee in database. It also validates the user input
      */
-    @RequestMapping(value = { "/edit-{ssn}-employee" }, method = RequestMethod.POST)
+    @RequestMapping(value = { "employees/edit-{ssn}-employee" }, method = RequestMethod.POST)
     public String updateEmployee(@Valid Employee employee, BindingResult result,
             ModelMap model, @PathVariable String ssn) {
 
         if (result.hasErrors()) {
-            return "registration";
+            return "employees/registration";
         }
 
         if(!service.isEmployeeSsnUnique(employee.getId(), employee.getSsn())){
             FieldError ssnError =new FieldError("employee","ssn",messageSource.getMessage("non.unique.ssn", new String[]{employee.getSsn()}, Locale.getDefault()));
             result.addError(ssnError);
-            return "registration";
+            return "employees/registration";
         }
 
         service.updateEmployee(employee);
 
         model.addAttribute("success", "Employee " + employee.getFirstName() + " " + employee.getLastName()	+ " updated successfully");
-        return "success";
+        return "employees/success";
     }
 
 
     /*
      * This method will delete an employee by it's SSN value.
      */
-    @RequestMapping(value = { "/delete-{ssn}-employee" }, method = RequestMethod.GET)
+    @RequestMapping(value = { "employees/delete-{ssn}-employee" }, method = RequestMethod.GET)
     public String deleteEmployee(@PathVariable String ssn) {
         service.deleteEmployeeBySsn(ssn);
         return "redirect:/list";
