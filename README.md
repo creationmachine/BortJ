@@ -1,4 +1,4 @@
-# BortJ - WIP
+# BortJ - Work In Progress
 
 Skeleton application for Spring using Gradle, minimal XML configurations and H2 DB as a development database.
 
