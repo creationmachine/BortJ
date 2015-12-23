@@ -1,7 +1,6 @@
 package com.creationmachine.dao;
 
 import java.io.Serializable;
-
 import java.lang.reflect.ParameterizedType;
 
 import org.hibernate.Criteria;
@@ -26,8 +25,8 @@ public abstract class AbstractDao<PK extends Serializable, T> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public T getByKey(PK key) {
-		return (T) getSession().get(persistentClass, key);
+	public T getByKey(Long id) {
+		return (T) getSession().get(persistentClass, id);
 	}
 
 	public void persist(T entity) {

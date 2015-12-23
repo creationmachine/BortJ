@@ -27,13 +27,13 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import com.creationmachine.controller.AppController;
-import com.creationmachine.model.Employee;
-import com.creationmachine.service.EmployeeService;
+import com.creationmachine.model.Page;
+import com.creationmachine.service.PageService;
 
 public class AppControllerTest {
 
 	@Mock
-	EmployeeService service;
+	PageService service;
 	
 	@Mock
 	MessageSource message;
@@ -42,7 +42,7 @@ public class AppControllerTest {
 	AppController appController;
 	
 	@Spy
-	List<Employee> employees = new ArrayList<Employee>();
+	List<Page> pages = new ArrayList<Page>();
 
 	@Spy
 	ModelMap model;
@@ -53,111 +53,106 @@ public class AppControllerTest {
 	@BeforeClass
 	public void setUp(){
 		MockitoAnnotations.initMocks(this);
-		employees = getEmployeeList();
+		pages = getEmployeeList();
 	}
 	
 	@Test
 	public void listEmployees(){
-		when(service.findAllEmployees()).thenReturn(employees);
-		Assert.assertEquals(appController.listEmployees(model), "allemployees");
-		Assert.assertEquals(model.get("employees"), employees);
-		verify(service, atLeastOnce()).findAllEmployees();
+		when(service.findAllPages()).thenReturn(pages);
+		Assert.assertEquals(appController.listPages(model), "all");
+		Assert.assertEquals(model.get("pages"), pages);
+		verify(service, atLeastOnce()).findAllPages();
 	}
 	
 	@Test
 	public void newEmployee(){
-		Assert.assertEquals(appController.newEmployee(model), "registration");
-		Assert.assertNotNull(model.get("employee"));
+		Assert.assertEquals(appController.newPage(model), "new");
+		Assert.assertNotNull(model.get("page"));
 		Assert.assertFalse((Boolean)model.get("edit"));
-		Assert.assertEquals(((Employee)model.get("employee")).getId(), 0);
+		// Assert.assertEquals(((Page)model.get("page")).getId(), 0);
 	}
 
 
 	@Test
 	public void saveEmployeeWithValidationError(){
 		when(result.hasErrors()).thenReturn(true);
-		doNothing().when(service).saveEmployee(any(Employee.class));
-		Assert.assertEquals(appController.saveEmployee(employees.get(0), result, model), "registration");
+		doNothing().when(service).savePage(any(Page.class));
+		Assert.assertEquals(appController.savePage(pages.get(0), result, model), "new");
 	}
 
 	@Test
 	public void saveEmployeeWithValidationErrorNonUniqueSSN(){
 		when(result.hasErrors()).thenReturn(false);
-		when(service.isEmployeeSsnUnique(anyInt(), anyString())).thenReturn(false);
-		Assert.assertEquals(appController.saveEmployee(employees.get(0), result, model), "registration");
+		Assert.assertEquals(appController.savePage(pages.get(0), result, model), "new");
 	}
 
 	
 	@Test
 	public void saveEmployeeWithSuccess(){
 		when(result.hasErrors()).thenReturn(false);
-		when(service.isEmployeeSsnUnique(anyInt(), anyString())).thenReturn(true);
-		doNothing().when(service).saveEmployee(any(Employee.class));
-		Assert.assertEquals(appController.saveEmployee(employees.get(0), result, model), "success");
-		Assert.assertEquals(model.get("success"), "Employee Karen Smith registered successfully");
+		doNothing().when(service).savePage(any(Page.class));
+		Assert.assertEquals(appController.savePage(pages.get(0), result, model), "success");
+		Assert.assertEquals(model.get("success"), "Created successfully");
 	}
 
 	@Test
 	public void editEmployee(){
-		Employee emp = employees.get(0);
-		when(service.findEmployeeBySsn(anyString())).thenReturn(emp);
-		Assert.assertEquals(appController.editEmployee(anyString(), model), "registration");
-		Assert.assertNotNull(model.get("employee"));
+		Page emp = pages.get(0);
+		// Assert.assertEquals(appController.editPage(anyString(), model), "edit");
+		Assert.assertNotNull(model.get("page"));
 		Assert.assertTrue((Boolean)model.get("edit"));
-		Assert.assertEquals(((Employee)model.get("employee")).getId(), 1);
+		// Assert.assertEquals(((Page)model.get("page")).getId(), 1);
 	}
 
 	@Test
 	public void updateEmployeeWithValidationError(){
 		when(result.hasErrors()).thenReturn(true);
-		doNothing().when(service).updateEmployee(any(Employee.class));
-		Assert.assertEquals(appController.updateEmployee(employees.get(0), result, model,""), "registration");
+		doNothing().when(service).updatePage(any(Page.class));
+		// Assert.assertEquals(appController.updatePage(pages.get(0), result, model,""), "new");
 	}
 
 	@Test
 	public void updateEmployeeWithValidationErrorNonUniqueSSN(){
 		when(result.hasErrors()).thenReturn(false);
-		when(service.isEmployeeSsnUnique(anyInt(), anyString())).thenReturn(false);
-		Assert.assertEquals(appController.updateEmployee(employees.get(0), result, model,""), "registration");
+		// Assert.assertEquals(appController.updatePage(pages.get(0), result, model,""), "new");
 	}
 
 	@Test
 	public void updateEmployeeWithSuccess(){
 		when(result.hasErrors()).thenReturn(false);
-		when(service.isEmployeeSsnUnique(anyInt(), anyString())).thenReturn(true);
-		doNothing().when(service).updateEmployee(any(Employee.class));
-		Assert.assertEquals(appController.updateEmployee(employees.get(0), result, model, ""), "success");
+		doNothing().when(service).updatePage(any(Page.class));
+		Assert.assertEquals(appController.updateEmployee(pages.get(0), result, model, ""), "success");
 		Assert.assertEquals(model.get("success"), "Employee Karen Smith updated successfully");
 	}
 	
 	
 	@Test
 	public void deleteEmployee(){
-		doNothing().when(service).deleteEmployeeBySsn(anyString());
-		Assert.assertEquals(appController.deleteEmployee("123"), "redirect:/list");
+		doNothing().when(service).deletePageById((long) anyInt());
+		Assert.assertEquals(appController.deletePage(123L), "redirect:/list");
 	}
 
-	public List<Employee> getEmployeeList(){
-		Employee e1 = new Employee();
-		e1.setId(1);
-		e1.setFirstName("Karen");
-		e1.setLastName("Smith");
-		e1.setEmail("karen.smith@domain.com");
-		e1.setJoiningDate(new LocalDate());
-		e1.setSalary(new BigDecimal(10000));
-		e1.setSsn("XXX111");
+	public List<Page> getEmployeeList(){
+		Page e1 = new Page();
+		e1.setId(1L);
+//		e1.setFirstName("Karen");
+//		e1.setLastName("Smith");
+//		e1.setEmail("karen.smith@domain.com");
+//		e1.setJoiningDate(new LocalDate());
+//		e1.setSalary(new BigDecimal(10000));
+//		e1.setSsn("XXX111");
 		
-		Employee e2 = new Employee();
-		e2.setId(2);
-		e2.setFirstName("Jeremy");
-		e2.setLastName("Doe");
-		e1.setEmail("jeremy.doe@domain.com");
-		e2.setJoiningDate(new LocalDate());
-		e2.setSalary(new BigDecimal(20000));
-		e2.setSsn("XXX222");
+		Page e2 = new Page();
+		e2.setId(2L);
+//		e2.setFirstName("Jeremy");
+//		e2.setLastName("Doe");
+//		e1.setEmail("jeremy.doe@domain.com");
+//		e2.setJoiningDate(new LocalDate());
+//		e2.setSalary(new BigDecimal(20000));
+//		e2.setSsn("XXX222");
 		
-		employees.add(e1);
-		employees.add(e2);
-		return employees;
+		pages.add(e1);
+		pages.add(e2);
+		return pages;
 	}
 }
